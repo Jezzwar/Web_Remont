@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -862,8 +862,8 @@
 <!-- ── SCRIPTS ── -->
 <script>
   // ── SUPABASE ──
-  const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
-  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+  const SUPABASE_URL  = 'https://bqrrgzufhgnnoafatwrz.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxcnJnenVmaGdubm9hZmF0d3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTg5OTUsImV4cCI6MjA4OTA5NDk5NX0.lZFe2RxELegON29ufKPSSZQmpB5urlMx808Mura6SN4';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   function escHtml(s) {
