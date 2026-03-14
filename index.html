@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -407,6 +408,14 @@
     .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-bottom p { font-size: .78rem; }
 
+    /* ── REVIEW FORM ── */
+    #opinia { background: var(--cream); }
+    .review-form-wrap { max-width: 640px; margin: 0 auto; background: var(--white); border-radius: var(--radius-lg); padding: 48px 40px; }
+    .star-rating { display: flex; gap: 6px; font-size: 2rem; cursor: default; }
+    .star { cursor: pointer; color: #ddd; transition: color .15s; line-height: 1; }
+    .star.active { color: var(--gold); }
+    @media (max-width: 640px) { .review-form-wrap { padding: 28px 20px; } }
+
     /* ── SOCIAL ICONS ── */
     .social-links { display: flex; gap: 12px; margin-top: 8px; }
     .social-link {
@@ -703,6 +712,48 @@
   </div>
 </section>
 
+<!-- ── REVIEW FORM ── -->
+<section id="opinia">
+  <div class="container">
+    <div class="section-head center">
+      <div class="section-eyebrow">Twoja opinia</div>
+      <h2 class="section-title">Zostaw opinię</h2>
+      <p class="section-sub">Podziel się swoją opinią. Zostanie opublikowana po weryfikacji przez administratora.</p>
+    </div>
+    <div class="review-form-wrap">
+      <form id="reviewForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="reviewName">Imię i nazwisko *</label>
+            <input type="text" id="reviewName" placeholder="Jan Kowalski" required />
+          </div>
+          <div class="field">
+            <label for="reviewLocation">Miasto</label>
+            <input type="text" id="reviewLocation" placeholder="Warszawa" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Ocena *</label>
+          <div class="star-rating" id="starRating">
+            <span class="star" data-v="1">★</span>
+            <span class="star" data-v="2">★</span>
+            <span class="star" data-v="3">★</span>
+            <span class="star" data-v="4">★</span>
+            <span class="star" data-v="5">★</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="reviewText">Opinia *</label>
+          <textarea id="reviewText" placeholder="Podziel się swoją opinią na temat naszych usług..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="reviewSubmitBtn">Wyślij opinię →</button>
+        <p class="form-note">Opinia zostanie opublikowana po weryfikacji przez administratora.</p>
+        <div class="success-msg" id="reviewSuccess">✅ Dziękujemy! Twoja opinia zostanie opublikowana po weryfikacji.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- ── FAQ ── -->
 <section id="faq">
   <div class="container">
@@ -810,7 +861,16 @@
 
 <!-- ── SCRIPTS ── -->
 <script>
-  // Gallery data
+  // ── SUPABASE ──
+  const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── GALLERY ──
   const photos = [
     { src: 'img/lazienki/IMG_2459.jpg', cat: 'lazienka', label: 'Łazienka', tall: true },
     { src: 'img/lazienki/IMG_2942.jpg', cat: 'lazienka', label: 'Łazienka', tall: false },
@@ -827,30 +887,34 @@
     { src: 'img/rozne/IMG_6904.jpg',    cat: 'rozne',    label: 'Różne',    tall: false },
   ];
 
-  let currentFilter = 'all';
-  let currentIndex  = 0;
-  let filtered      = [...photos];
+  let currentFilter = 'all', currentIndex = 0, filtered = [...photos];
 
   function renderGallery(filter) {
     filtered = filter === 'all' ? photos : photos.filter(p => p.cat === filter);
     const grid = document.getElementById('galleryGrid');
     grid.innerHTML = filtered.map((p, i) => `
       <div class="gallery-item${p.tall ? ' tall' : ''}" data-index="${i}">
-        <img src="${p.src}" alt="${p.label}" loading="lazy" />
-        <div class="gallery-overlay">
-          <div class="gallery-overlay-content">
-            <h4>${p.label}</h4>
-            <span>Warszawa i okolice</span>
-          </div>
-        </div>
-        <div class="gallery-tag">${p.label}</div>
-      </div>
-    `).join('');
-    grid.querySelectorAll('.gallery-item').forEach(el => {
-      el.addEventListener('click', () => openLightbox(+el.dataset.index));
-    });
+        <img src="${p.src}" alt="${escHtml(p.label)}" loading="lazy" />
+        <div class="gallery-overlay"><div class="gallery-overlay-content">
+          <h4>${escHtml(p.label)}</h4><span>Warszawa i okolice</span>
+        </div></div>
+        <div class="gallery-tag">${escHtml(p.label)}</div>
+      </div>`).join('');
+    grid.querySelectorAll('.gallery-item').forEach(el =>
+      el.addEventListener('click', () => openLightbox(+el.dataset.index)));
   }
-  renderGallery('all');
+
+  async function initGallery() {
+    try {
+      const { data, error } = await sb.from('gallery').select('*').eq('active', true).order('created_at', { ascending: false });
+      if (!error && data && data.length) {
+        photos.length = 0;
+        data.forEach(item => photos.push({ src: item.src, cat: item.cat, label: item.label, tall: item.tall || false }));
+      }
+    } catch(e) {}
+    renderGallery('all');
+  }
+  initGallery();
 
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -861,7 +925,30 @@
     });
   });
 
-  // Lightbox
+  // ── TESTIMONIALS FROM SUPABASE ──
+  async function loadTestimonials() {
+    try {
+      const { data, error } = await sb.from('reviews').select('*').eq('status', 'approved').order('created_at', { ascending: false }).limit(6);
+      if (error || !data || !data.length) return;
+      const grid = document.querySelector('.testimonials-grid');
+      if (!grid) return;
+      grid.innerHTML = data.map(r => `
+        <div class="testimonial-card">
+          <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+          <p class="testimonial-text">${escHtml(r.text)}</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">${escHtml(r.name.charAt(0).toUpperCase())}</div>
+            <div class="author-info">
+              <h4>${escHtml(r.name)}</h4>
+              <span>${escHtml(r.location || 'Warszawa')}</span>
+            </div>
+          </div>
+        </div>`).join('');
+    } catch(e) {}
+  }
+  loadTestimonials();
+
+  // ── LIGHTBOX ──
   function openLightbox(i) {
     currentIndex = i;
     document.getElementById('lbImg').src = filtered[i].src;
@@ -889,7 +976,7 @@
     if (e.key === 'Escape')     closeLightbox();
   });
 
-  // FAQ accordion
+  // ── FAQ ──
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
@@ -899,53 +986,65 @@
     });
   });
 
-  // Form
+  // ── CONTACT FORM ──
   const FORMSPREE_ID = 'xvzwqnle';
-
   document.getElementById('contactForm').addEventListener('submit', async e => {
     e.preventDefault();
     const fname = document.getElementById('fname').value.trim();
     const phone = document.getElementById('phone').value.trim();
     if (!fname || !phone) { alert('Proszę podać imię i numer telefonu.'); return; }
-
-    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
-      alert('⚠️ Ustaw FORMSPREE_ID w kodzie strony.');
-      return;
-    }
-
-    const btn = document.querySelector('.submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Wysyłanie…';
-
+    if (FORMSPREE_ID === 'YOUR_FORM_ID') { alert('⚠️ Ustaw FORMSPREE_ID w kodzie strony.'); return; }
+    const btn = document.querySelector('#contactForm .submit-btn');
+    btn.disabled = true; btn.textContent = 'Wysyłanie…';
     try {
       const data = new FormData(e.target);
-      const res  = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-        method: 'POST', body: data, headers: { Accept: 'application/json' }
-      });
+      const res  = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
       if (res.ok) {
         document.getElementById('successMsg').style.display = 'block';
         e.target.reset();
         setTimeout(() => { document.getElementById('successMsg').style.display = 'none'; }, 7000);
       } else {
         const json = await res.json();
-        const details = json.errors ? json.errors.map(er => er.message || er.code).join('; ') : (json.error || res.status);
-        alert('Błąd wysyłania: ' + details);
+        alert('Błąd wysyłania: ' + (json.errors ? json.errors.map(er => er.message).join('; ') : res.status));
       }
-    } catch (err) {
-      alert('Brak połączenia z internetem. Spróbuj ponownie.');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Wyślij zapytanie →';
-    }
+    } catch(err) { alert('Brak połączenia z internetem.'); }
+    finally { btn.disabled = false; btn.textContent = 'Wyślij zapytanie →'; }
   });
 
-  // Mobile menu
+  // ── REVIEW FORM ──
+  let selectedRating = 5;
+  const reviewStars = document.querySelectorAll('#starRating .star');
+  function updateStars(n) { reviewStars.forEach(s => s.classList.toggle('active', +s.dataset.v <= n)); }
+  updateStars(5);
+  reviewStars.forEach(s => {
+    s.addEventListener('click', () => { selectedRating = +s.dataset.v; updateStars(selectedRating); });
+    s.addEventListener('mouseenter', () => updateStars(+s.dataset.v));
+  });
+  document.getElementById('starRating').addEventListener('mouseleave', () => updateStars(selectedRating));
+
+  document.getElementById('reviewForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name     = document.getElementById('reviewName').value.trim();
+    const text     = document.getElementById('reviewText').value.trim();
+    const location = document.getElementById('reviewLocation').value.trim() || 'Warszawa';
+    if (!name || !text) { alert('Podaj imię i treść opinii.'); return; }
+    const btn = document.getElementById('reviewSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Wysyłanie…';
+    try {
+      const { error } = await sb.from('reviews').insert({ name, text, location, rating: selectedRating, status: 'pending' });
+      if (error) throw error;
+      document.getElementById('reviewSuccess').style.display = 'block';
+      e.target.reset(); selectedRating = 5; updateStars(5);
+      setTimeout(() => document.getElementById('reviewSuccess').style.display = 'none', 7000);
+    } catch(err) { alert('Błąd wysyłania. Spróbuj ponownie.'); }
+    finally { btn.disabled = false; btn.textContent = 'Wyślij opinię →'; }
+  });
+
+  // ── MOBILE MENU ──
   document.getElementById('burger').addEventListener('click', () => {
     document.getElementById('mobileMenu').classList.toggle('open');
   });
-  function closeMobileMenu() {
-    document.getElementById('mobileMenu').classList.remove('open');
-  }
+  function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
 </script>
 </body>
 </html>
