@@ -615,6 +615,76 @@
   <button class="lb-next" id="lbNext">›</button>
 </div>
 
+<!-- ── TESTIMONIALS + REVIEW FORM ── -->
+<section id="opinie">
+  <div class="container">
+    <div class="section-head center">
+      <div class="section-eyebrow">Opinie klientów</div>
+      <h2 class="section-title light">Co mówią nasi klienci</h2>
+    </div>
+    <div class="testimonials-grid" id="testimonialsGrid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Profesjonalna ekipa, terminowo i bez niespodzianek. Łazienka wyszła rewelacyjnie – polecam z całego serca!</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div class="author-info"><h4>Anna K.</h4><span>Warszawa</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Remont kuchni przebiegł sprawnie. Dobry kontakt, uczciwa wycena i świetny efekt końcowy.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">M</div>
+          <div class="author-info"><h4>Marek W.</h4><span>Pruszków</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Kompleksowy remont mieszkania – wszystko dopięte na ostatni guzik. Zdecydowanie polecam Dmytro!</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">K</div>
+          <div class="author-info"><h4>Katarzyna M.</h4><span>Piaseczno</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compact review form -->
+    <div style="margin-top:56px">
+      <h3 style="color:var(--white);font-family:'Playfair Display',serif;font-size:1.4rem;text-align:center;margin-bottom:24px">Zostaw swoją opinię</h3>
+      <form id="reviewForm" novalidate style="max-width:700px;margin:0 auto;background:rgba(255,255,255,.06);border:1px solid rgba(201,169,110,.2);border-radius:12px;padding:28px 32px">
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="field" style="margin-bottom:0">
+            <label for="reviewName" style="color:rgba(255,255,255,.6)">Imię i nazwisko *</label>
+            <input type="text" id="reviewName" placeholder="Jan Kowalski" required />
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="reviewLocation" style="color:rgba(255,255,255,.6)">Miasto</label>
+            <input type="text" id="reviewLocation" placeholder="Warszawa" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label style="color:rgba(255,255,255,.6)">Ocena *</label>
+          <div class="star-rating" id="starRating">
+            <span class="star" data-v="1">★</span>
+            <span class="star" data-v="2">★</span>
+            <span class="star" data-v="3">★</span>
+            <span class="star" data-v="4">★</span>
+            <span class="star" data-v="5">★</span>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:18px">
+          <label for="reviewText" style="color:rgba(255,255,255,.6)">Opinia *</label>
+          <textarea id="reviewText" rows="3" placeholder="Podziel się swoją opinią..." required style="min-height:80px"></textarea>
+        </div>
+        <button type="submit" class="btn-primary" id="reviewSubmitBtn" style="border:none;cursor:pointer">Wyślij opinię →</button>
+        <p class="form-note" style="color:rgba(255,255,255,.35);margin-top:10px">Opinia zostanie opublikowana po weryfikacji przez administratora.</p>
+        <div class="success-msg" id="reviewSuccess" style="margin-top:12px">✅ Dziękujemy! Twoja opinia zostanie opublikowana po weryfikacji.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- ── PHONE / CTA ── -->
 <div id="kontakt-info">
   <div class="cta-inner">
@@ -707,48 +777,6 @@
         <button type="submit" class="submit-btn">Wyślij zapytanie →</button>
         <p class="form-note">* Dane osobowe są przetwarzane wyłącznie w celu przygotowania wyceny i nie są przekazywane osobom trzecim.</p>
         <div class="success-msg" id="successMsg">✅ Dziękujemy! Odezwiemy się wkrótce.</div>
-      </form>
-    </div>
-  </div>
-</section>
-
-<!-- ── REVIEW FORM ── -->
-<section id="opinia">
-  <div class="container">
-    <div class="section-head center">
-      <div class="section-eyebrow">Twoja opinia</div>
-      <h2 class="section-title">Zostaw opinię</h2>
-      <p class="section-sub">Podziel się swoją opinią. Zostanie opublikowana po weryfikacji przez administratora.</p>
-    </div>
-    <div class="review-form-wrap">
-      <form id="reviewForm" novalidate>
-        <div class="form-row">
-          <div class="field">
-            <label for="reviewName">Imię i nazwisko *</label>
-            <input type="text" id="reviewName" placeholder="Jan Kowalski" required />
-          </div>
-          <div class="field">
-            <label for="reviewLocation">Miasto</label>
-            <input type="text" id="reviewLocation" placeholder="Warszawa" />
-          </div>
-        </div>
-        <div class="field">
-          <label>Ocena *</label>
-          <div class="star-rating" id="starRating">
-            <span class="star" data-v="1">★</span>
-            <span class="star" data-v="2">★</span>
-            <span class="star" data-v="3">★</span>
-            <span class="star" data-v="4">★</span>
-            <span class="star" data-v="5">★</span>
-          </div>
-        </div>
-        <div class="field">
-          <label for="reviewText">Opinia *</label>
-          <textarea id="reviewText" placeholder="Podziel się swoją opinią na temat naszych usług..." required></textarea>
-        </div>
-        <button type="submit" class="submit-btn" id="reviewSubmitBtn">Wyślij opinię →</button>
-        <p class="form-note">Opinia zostanie opublikowana po weryfikacji przez administratora.</p>
-        <div class="success-msg" id="reviewSuccess">✅ Dziękujemy! Twoja opinia zostanie opublikowana po weryfikacji.</div>
       </form>
     </div>
   </div>
@@ -930,7 +958,7 @@
     try {
       const { data, error } = await sb.from('reviews').select('*').eq('status', 'approved').order('created_at', { ascending: false }).limit(6);
       if (error || !data || !data.length) return;
-      const grid = document.querySelector('.testimonials-grid');
+      const grid = document.getElementById('testimonialsGrid');
       if (!grid) return;
       grid.innerHTML = data.map(r => `
         <div class="testimonial-card">
